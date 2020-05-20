@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use Hash;
+use DB;
+use Log;
 
 class AuthController extends Controller
 {
@@ -61,5 +63,35 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
+    }
+    public function testSearch(Request $request){
+        $filter = array(
+            'id'       => isset($request->id) ? $request->id : false,
+            'name'     => isset($request->name) ? $request->name : false,
+            'fromdate' => isset($request->fromdate) ? $request->fromdate : false,
+            'todate'   => isset($request->todate) ? $request->todate : false,
+        );
+        $where = array();
+        if ($filter['id']){
+            $where[] = "id = '$request->id'";
+        }
+         
+        if ($filter['name']){
+            $where[] = "name = '$request->name'";
+        }
+         
+        if ($filter['fromdate']){
+            $where[] = "created_at > '$request->fromdate'";
+        }
+         
+        if ($filter['todate']){
+            $where[] = "created_at < '$request->todate'";
+        }
+        $query = "SELECT * FROM users";
+        if ($where){
+            $query .= " WHERE ".implode(' AND ',$where);
+        }
+        $user = DB::select($query);
+        return response()->json(['data' => $user]);
     }
 }

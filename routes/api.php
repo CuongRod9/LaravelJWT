@@ -9,4 +9,5 @@ use Illuminate\Support\Facades\Route;
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
     Route::post('user', 'AuthController@user');
+    Route::post('test', 'AuthController@testSearch');
 // });
